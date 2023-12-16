@@ -1,0 +1,6 @@
+.DS_Store
+*_test
+*.dSYM
+node_modules
+changever
+changever.exe

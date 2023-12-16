@@ -1,0 +1,12 @@
+{
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/*.dSYM": true,
+    "**/*_test": true,
+    "bun.lockb": true,
+    "node_modules": true,
+    "changever": true,
+    "changever.exe": true
+  }
+}

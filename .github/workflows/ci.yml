@@ -1,0 +1,153 @@
+name: Build and Test or Release
+
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '**'
+    paths-ignore:
+      - '**/*.md'
+      - LICENSE
+  pull_request:
+
+jobs:
+
+  linux:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.bump.outputs.bumped }}
+      changed-files: ${{ steps.shelve.outputs.files }}
+    steps:
+    - name: Checkout Sources
+      uses: actions/checkout@v4
+    - name: Setup V
+      uses: prantlf/setup-v-action@v2
+    - name: Bump version
+      id: bump
+      uses: prantlf/bump-version-action@v2
+      with:
+        bump-files: src/changever.v
+    - name: Build and Test V
+      run: make RELEASE=1
+    - name: Install Bun
+      uses: oven-sh/setup-bun@v1
+    - name: Install Dependencies
+      run: bun i
+      env:
+        DEBUG: linkbe,grabghr
+    - name: Test Bun
+      run: |
+        node_modules/.bin/changever -V
+        node_modules/.bin/changever -V
+    - name: Shelve changes
+      if: ${{ steps.bump.outputs.bumped == 'true' }}
+      id: shelve
+      uses: prantlf/shelve-changes-action@v1
+    - name: Shelve output
+      if: ${{ steps.bump.outputs.bumped == 'true' }}
+      uses: prantlf/shelve-output-action@v2
+      with:
+        extra: man
+    - name: Install ARM Cross-Compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install gcc gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+    - name: Build ARM
+      run: make build RELEASE=1 LINUX_ARM=1
+    - name: Shelve output
+      if: ${{ steps.bump.outputs.bumped == 'true' }}
+      uses: prantlf/shelve-output-action@v2
+      with:
+        arch: arm64
+        extra: man
+
+  macos:
+    needs:
+      - linux
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Sources
+      uses: actions/checkout@v4
+    - name: Unshelve changes
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      uses: prantlf/unshelve-changes-action@v1
+      with:
+        files: ${{ needs.linux.outputs.changed-files }}
+        discard-shelf: false
+    - name: Setup V
+      uses: prantlf/setup-v-action@v2
+    - name: Build and Test
+      run: make RELEASE=1
+    - name: Install Bun
+      uses: oven-sh/setup-bun@v1
+    - name: Install Dependencies
+      run: bun i
+      env:
+        DEBUG: linkbe,grabghr
+    - name: Test Bun
+      run: |
+        node_modules/.bin/changever -V
+        node_modules/.bin/changever -V
+      env:
+        DEBUG: linkbe,grabghr
+    - name: Shelve output
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      uses: prantlf/shelve-output-action@v2
+      with:
+        extra: man
+    - name: Build ARM
+      run: make build RELEASE=1 ARM=1
+    - name: Shelve output
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      uses: prantlf/shelve-output-action@v2
+      with:
+        arch: arm64
+        extra: man
+
+  windows:
+    needs:
+      - linux
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Sources
+      uses: actions/checkout@v4
+    - name: Unshelve changes
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      uses: prantlf/unshelve-changes-action@v1
+      with:
+        files: ${{ needs.linux.outputs.changed-files }}
+        discard-shelf: false
+    - name: Setup V
+      uses: prantlf/setup-v-action@v2
+    - name: Install Cross-Compiler
+      run: sudo apt-get install gcc-mingw-w64-x86-64
+    - name: Build Windows
+      run: make build RELEASE=1 WINDOWS=1
+    - name: Shelve output
+      if: ${{ needs.linux.outputs.changed == 'true' }}
+      uses: prantlf/shelve-output-action@v2
+      with:
+        os: windows
+
+  release:
+    if: ${{ github.ref_name == 'master' && needs.linux.outputs.changed == 'true' }}
+    needs:
+      - linux
+      - macos
+      - windows
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v4
+    - name: Unshelve changes
+      uses: prantlf/unshelve-changes-action@v1
+      with:
+        files: ${{ needs.linux.outputs.changed-files }}
+    - name: Unshelve output
+      uses: prantlf/unshelve-output-action@v5
+    - name: Publish
+      uses: prantlf/finish-release-action@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

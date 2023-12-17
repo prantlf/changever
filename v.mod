@@ -1,7 +1,7 @@
 Module {
 	name: 'changever'
 	description: 'Changelog-driven version manager - helps with generating changelog and publishing a new version of a Node.js package.'
-	version: '0.1.0'
+	version: '0.2.0'
 	license: 'MIT'
 	dependencies: [
 		'prantlf.cli', 'prantlf.debug', 'prantlf.github', 'prantlf.jany',

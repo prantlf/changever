@@ -1,5 +1,16 @@
 # Changes
 
+## [0.2.0](https://github.com/prantlf/changever/compare/v0.1.0...v0.2.0) (2023-12-17)
+
+### Features
+
+* Propagate dry run to npm ([5d34bf3](https://github.com/prantlf/changever/commit/5d34bf3216c515b361b448150f2c93d698e01592))
+* Authenticate npm using process environment ([063c82b](https://github.com/prantlf/changever/commit/063c82bf725e6b5f1734b6087d7d91a15872e4c0))
+
+### Bug Fixes
+
+* Use proper parameter for npm verbosity ([0d1e210](https://github.com/prantlf/changever/commit/0d1e21074fe9fc7baf4cdd2770e35d1dee722a19))
+
 ## [0.1.0](https://github.com/prantlf/changever/compare/v0.0.0...v0.1.0) (2023-12-16)
 
 ### Features

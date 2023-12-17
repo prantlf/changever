@@ -4,7 +4,7 @@ import prantlf.json { ParseOpts, parse }
 import prantlf.osutil { find_file }
 
 fn find_package() !(string, string) {
-	return find_file('package.json')!
+	return find_file('package.json') or { error('package.json not found') }
 }
 
 fn read_json(file string) !Any {

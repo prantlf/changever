@@ -42,18 +42,19 @@ Examples:
   $ changever publish -vd'
 
 struct Opts {
-	changes  bool = true
-	bump     bool = true
-	commit   ?bool
-	tag      ?bool
-	push     bool = true
-	release  bool = true
-	failure  bool = true
-	nc_args  string @[json: 'nc-args']
-	yes      bool
-	dry_run  bool   @[json: 'dry-run']
-	verbose  bool
-	gh_token string @[json: 'gh-token']
+	changes   bool = true
+	bump      bool = true
+	commit    ?bool
+	tag       ?bool
+	push      bool = true
+	release   bool = true
+	failure   bool = true
+	nc_args   string @[json: 'nc-args']
+	yes       bool
+	dry_run   bool   @[json: 'dry-run']
+	verbose   bool
+	gh_token  string @[json: 'gh-token']
+	npm_token string @[json: 'npm-token']
 }
 
 const d = new_debug('vp')

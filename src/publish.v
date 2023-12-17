@@ -1,3 +1,4 @@
+import os { create, exists, getenv_opt, home_dir, join_path_single, read_lines }
 import prantlf.github { create_release, find_git, get_gh_token, get_release, get_repo_path }
 import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.strutil { last_line_not_empty, until_one_but_last_line_not_empty }
@@ -98,6 +99,13 @@ fn do_publish(ver string, log string, opts &Opts) ! {
 }
 
 fn publish_package(ver string, opts &Opts) ! {
+	was_authenticated, glob_npmrc, npmrc := authenticate(opts)!
+	defer {
+		if was_authenticated {
+			set_auth_token(glob_npmrc, npmrc, '') or { eprintln(err.msg()) }
+		}
+	}
+
 	mode := if opts.dry_run {
 		' (dry-run)'
 	} else {
@@ -111,5 +119,79 @@ fn publish_package(ver string, opts &Opts) ! {
 		}
 		out := execute('npm publish --access public${extra_args}')!
 		println(out)
+	}
+}
+
+fn authenticate(opts &Opts) !(bool, string, []string) {
+	mut is_authenticated := false
+	mut npmrc := []string{}
+	glob_npmrc := join_path_single(home_dir(), '.npmrc')
+	if exists(glob_npmrc) {
+		npmrc = read_npmrc(glob_npmrc)!
+		is_authenticated = has_auth_token(npmrc)!
+	}
+	if !is_authenticated {
+		pkg_dir, _ := find_package()!
+		loc_npmrc := join_path_single(pkg_dir, '.npmrc')
+		if exists(loc_npmrc) {
+			npmrc2 := read_npmrc(loc_npmrc)!
+			is_authenticated = has_auth_token(npmrc2)!
+		}
+	}
+
+	if is_authenticated {
+		return false, '', []string{}
+	}
+
+	token := if opts.npm_token.len > 0 {
+		opts.npm_token
+	} else {
+		get_npm_token()!
+	}
+	set_auth_token(glob_npmrc, npmrc, token)!
+
+	return true, glob_npmrc, npmrc
+}
+
+fn read_npmrc(file string) ![]string {
+	d.log('reading "%s"', file)
+	return read_lines(file)!
+}
+
+fn has_auth_token(npmrc []string) !bool {
+	for line in npmrc {
+		if line.contains('//registry.npmjs.org/:_authToken') {
+			d.log_str('is authenticated')
+			return true
+		}
+		d.log('ignoring line "%s"', line)
+	}
+	d.log_str('is not authenticated')
+	return false
+}
+
+fn set_auth_token(file string, lines []string, token string) ! {
+	d.log('creating "%s"', file)
+	mut out := create(file)!
+	defer {
+		out.close()
+	}
+
+	d.log_str('writing new contents')
+	for line in lines {
+		out.writeln(line)!
+	}
+	if token.len > 0 {
+		out.write_string('//registry.npmjs.org/:_authToken=')!
+		out.writeln(token)!
+	}
+
+	out.close()
+	d.log_str('file written')
+}
+
+fn get_npm_token() !string {
+	return getenv_opt('NODE_AUTH_TOKEN') or {
+		getenv_opt('NPM_TOKEN') or { return error('neither NODE_AUTH_TOKEN nor NPM_TOKEN found') }
 	}
 }

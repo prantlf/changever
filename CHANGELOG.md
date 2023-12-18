@@ -1,5 +1,11 @@
 # Changes
 
+## [0.3.0](https://github.com/prantlf/changever/compare/v0.2.0...v0.3.0) (2023-12-18)
+
+### Features
+
+* Allow disabling npm publishing ([cd53a8f](https://github.com/prantlf/changever/commit/cd53a8f7bc3bd997b7d49d23e3b22e789a14099c))
+
 ## [0.2.0](https://github.com/prantlf/changever/compare/v0.1.0...v0.2.0) (2023-12-17)
 
 ### Features

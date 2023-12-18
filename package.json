@@ -1,6 +1,6 @@
 {
   "name": "changever",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Changelog-driven version manager - helps with generating changelog and publishing a new version of a Node.js package.",
   "author": {
     "name": "Ferdinand Prantl",

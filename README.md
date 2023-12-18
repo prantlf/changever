@@ -38,6 +38,7 @@ Make sure, that you use [Node.js] version 18 or newer.
       --no-commit        do not commit the changes during publishing
       --no-tag           do not tag the commit during publishing
       --no-push          do not push the commit and tag during publishing
+      --no-publish       do not publish a new npm package version
       --no-release       do not create a new github release
       --no-failure       do not fail in case of no version change or release
       --nc-args <args>   extra arguments for newchanges, enclosed in quotes

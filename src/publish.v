@@ -50,7 +50,9 @@ fn get_last_version(opts &Opts) !(string, string) {
 }
 
 fn do_publish(ver string, log string, opts &Opts) ! {
-	publish_package(ver, opts)!
+	if opts.publish {
+		publish_package(ver, opts)!
+	}
 
 	repo_path, gh_token := if opts.release {
 		path := find_git()!

@@ -25,6 +25,7 @@ Options for version, publish and release:
   --no-commit        do not commit the changes during publishing
   --no-tag           do not tag the commit during publishing
   --no-push          do not push the commit and tag during publishing
+  --no-publish       do not publish a new npm package version
   --no-release       do not create a new github release
   --no-failure       do not fail in case of no version change or release
 	--nc-args <args>   extra arguments for newchanges, enclosed in quotes
@@ -47,6 +48,7 @@ struct Opts {
 	commit    ?bool
 	tag       ?bool
 	push      bool = true
+	publish   bool = true
 	release   bool = true
 	failure   bool = true
 	nc_args   string @[json: 'nc-args']

@@ -1,5 +1,11 @@
 # Changes
 
+## [0.3.1](https://github.com/prantlf/changever/compare/v0.3.0...v0.3.1) (2024-01-01)
+
+### Bug Fixes
+
+* Adapt to changes on interface of json and yaml packages ([f8594ee](https://github.com/prantlf/changever/commit/f8594ee126e39b8fed8bc59b5c3e329cc5c81b5b))
+
 ## [0.3.0](https://github.com/prantlf/changever/compare/v0.2.0...v0.3.0) (2023-12-18)
 
 ### Features

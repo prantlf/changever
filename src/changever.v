@@ -1,7 +1,7 @@
 import prantlf.cli { Cli, Env, run }
 import prantlf.debug { new_debug }
 
-const version = '0.3.0'
+const version = '0.3.1'
 
 const usage = 'Changelog-driven version manager - helps with generating changelog and publishing a new version of a Node.js package.
 

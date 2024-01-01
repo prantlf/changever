@@ -1,6 +1,6 @@
 import os { read_file }
 import prantlf.jany { Any }
-import prantlf.json { ParseOpts, parse }
+import prantlf.json { parse }
 import prantlf.osutil { find_file }
 
 fn find_package() !(string, string) {
@@ -11,7 +11,7 @@ fn read_json(file string) !Any {
 	dfile := d.rwd(file)
 	d.log('reading file "%s"', dfile)
 	text := read_file(file)!
-	return parse(text, ParseOpts{})!
+	return parse(text)!
 }
 
 fn get_name() !string {

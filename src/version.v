@@ -2,7 +2,7 @@ import os { exists, join_path_single, write_file }
 import semver { Increment }
 import prantlf.debug { rwd }
 import prantlf.jany { Any, any_null }
-import prantlf.json { StringifyOpts, stringify }
+import prantlf.json { StringifyOpts, stringify_opt }
 import prantlf.osutil { ExecuteOpts, execute, execute_opt }
 import prantlf.pcre { pcre_compile }
 import prantlf.strutil { last_line_not_empty, until_last_nth_line_not_empty }
@@ -164,13 +164,13 @@ fn set_version(ver string, pkg_dir string, pkg_file string, pkg &Any, opts &Opts
 	if !opts.dry_run {
 		dpkg_file := d.rwd(pkg_file)
 		d.log('writing file "%s"', dpkg_file)
-		text := stringify(pkg, StringifyOpts{ pretty: true })
+		text := stringify_opt(pkg, &StringifyOpts{ pretty: true })
 		write_file(pkg_file, text)!
 
 		if lck_is {
 			dlck_file := d.rwd(lck_file)
 			d.log('writing file "%s"', dlck_file)
-			text2 := stringify(lck, StringifyOpts{ pretty: true })
+			text2 := stringify_opt(lck, &StringifyOpts{ pretty: true })
 			write_file(lck_file, text2)!
 		}
 	}
